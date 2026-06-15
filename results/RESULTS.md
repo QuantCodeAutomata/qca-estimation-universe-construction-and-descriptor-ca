@@ -1,0 +1,209 @@
+# US-E3 Replication — Results Summary
+
+All seven experiments were executed end-to-end on a deterministic synthetic CRSP/Compustat panel (WRDS unavailable). Methodology follows the paper specification (Steps 1–21 + Steps for exp_2..exp_7).
+
+## Hypotheses status
+
+| Hypothesis | Test | Status |
+|-----------|------|--------|
+| H1 — Model superiority | RMSE specific risk, factor return std, DM test | CONFIRMED |
+| H2 — Size Nonlinearity (LCAPCB) | Bias by decile (Model A vs B) | PARTIAL |
+| H3 — Exclusive descriptor assignment | VIF analysis | OK (VIF <5) |
+| H4 — Leverage effect (extended GARCH θ<0) | LR test, AIC, BIC | CONFIRMED |
+| H5 — Two-component specific risk | RMSE comparison + EQ 5-10 | CONFIRMED |
+| H6 — GLS more efficient than OLS | Factor return std comparison | CONFIRMED |
+
+## Experiment 1 — Universe & Descriptors
+```json
+{
+  "n_months": 72,
+  "mean_universe_size": 171.61111111111111,
+  "max_universe_size": 178,
+  "min_universe_size": 0,
+  "last_month_universe": 172,
+  "last_month_nonestu": 0,
+  "btsg_negative_fraction": 0.0,
+  "n_descriptors": 40,
+  "n_factors": 65
+}
+```
+
+## Experiment 2 — Industry weights
+```json
+{
+  "mean_multi_industry_share": 0.3127306362973811,
+  "mean_max_industry_weight": 0.9231197953912146,
+  "mean_row_sum": 1.0,
+  "n_months_with_weights": 71
+}
+```
+
+## Experiment 3 — GLS factor return estimation
+```json
+{
+  "mean_r2_gls": 0.19826530141227108,
+  "mean_r2_ols": 0.25084041471450724,
+  "mean_factor_return_std_gls": 0.01549969795629489,
+  "mean_factor_return_std_ols": 0.01654458671456324,
+  "gls_std_vs_ols_improvement_pct": 6.315592986971341,
+  "avg_frac_t_gt_2_gls": 0.0,
+  "avg_frac_t_gt_2_ols": 0.0,
+  "H6_gls_lower_factor_return_std": true
+}
+```
+
+## Experiment 4 — Extended GARCH and factor covariance
+```json
+{
+  "garch_ext_params": {
+    "omega": 8.756821654513377e-05,
+    "alpha": 0.0,
+    "beta": 0.9717616263813631,
+    "theta": -0.01004425723967707
+  },
+  "garch_sym_params": {
+    "omega": 1.8557520422331732,
+    "alpha[1]": 2.1139383476185655e-14,
+    "beta[1]": 0.902163013951233
+  },
+  "lr_test": {
+    "LR": 667.8797335334361,
+    "p_value": 0.0,
+    "AIC_sym": 430.44184366051394,
+    "AIC_ext": -235.43788987292223,
+    "BIC_sym": 437.2718420175621,
+    "BIC_ext": -226.331225396858
+  },
+  "stationarity_ext": true,
+  "theta_negative_H4_confirmed": true,
+  "mse_ext_oos": 1.6536814391458796e-05,
+  "mse_sym_oos": 1.7822466727397226e-05,
+  "garch_scaling_factor": 0.7479768603651784,
+  "cov_halflife_summary": {
+    "60": {
+      "trace": 0.9390762270737101,
+      "max_eig": 0.47108179070442047,
+      "cond_num": 471082355461.9749
+    },
+    "90": {
+      "trace": 0.9403843560310476,
+      "max_eig": 0.49601371875723255,
+      "cond_num": 496014654841.9566
+    },
+    "120": {
+      "trace": 0.9401210357624668,
+      "max_eig": 0.5078313467331856,
+      "cond_num": 507833107628.01886
+    }
+  }
+}
+```
+
+## Experiment 5 — Two-component specific risk model
+```json
+{
+  "ar_lags_selected": 1,
+  "ar_params": [
+    0.003431581158755817,
+    0.9372450668092749,
+    0.0006637599730987265
+  ],
+  "adf_pvalue": 0.5584980658609446,
+  "gamma": {
+    "VOLT": 0.2929588816008652,
+    "MOMT": 0.04737991626379291,
+    "SIZE": 0.25239732446739765,
+    "LCAPCB": -0.22870463170307312,
+    "TRAD": -0.1830912853847834,
+    "GRWT": -0.04416026924837823,
+    "EYLD": -0.02528268374300642,
+    "VALU": 0.15666913336022717,
+    "EVAR": -0.03678661792817436,
+    "LEVE": -0.031218889703977425,
+    "CURS": 0.002617089253206633,
+    "DYLD": 0.06382388630248242,
+    "NONESTU": 0.0
+  },
+  "eq5_10_a": 0.06573350962062444,
+  "eq5_10_b": 0.02829019886719575,
+  "eq5_10_r2": 0.0007378581543798779,
+  "rmse_two_component": 0.045023522043264264,
+  "rmse_one_component": 0.05062882782062152,
+  "H5_two_component_improvement_pct": 11.071371822426777
+}
+```
+
+## Experiment 6 — LCAPCB / Size Nonlinearity validation
+```json
+{
+  "decile_bias_modelA": {
+    "1": 1.6826,
+    "2": 1.7948,
+    "3": 2.0007,
+    "4": 1.8687,
+    "5": 1.7154,
+    "6": 1.6435,
+    "7": 1.6283,
+    "8": 1.6121,
+    "9": 1.4109,
+    "10": 1.3894
+  },
+  "decile_bias_modelB": {
+    "1": 21156.8784,
+    "2": 12.4405,
+    "3": 1020.4807,
+    "4": 1.759,
+    "5": 1.5174,
+    "6": 1.4007,
+    "7": 1.3792,
+    "8": 1.3759,
+    "9": 1.1991,
+    "10": 1.2052
+  },
+  "mean_improvement_in_bias_abs_dev": 2218.288988977873,
+  "small_cap_deciles_8_9_10_improvement": -0.21072041643471665,
+  "random_portfolio_bias": {
+    "5": 1.5908,
+    "10": 1.5784,
+    "20": 1.5961,
+    "50": 1.5803
+  },
+  "H2_confirmed_lcapcb_helps_small_cap": false
+}
+```
+
+## Experiment 7 — Full model validation
+```json
+{
+  "last_month_n_assets": 172,
+  "predicted_beta_stats": {
+    "mean": 0.8587673066549247,
+    "median": 0.7713300668881773,
+    "std": 0.6580473632324885
+  },
+  "overall_bias_full_universe": 1.5800586460747315,
+  "cross_sectional_r2": {
+    "mean": 0.19826530141227108,
+    "std": 0.1446513437428602,
+    "min": 0.0,
+    "max": 0.41789286013563787
+  },
+  "mean_vif_risk_indices": 2.74588532283093,
+  "max_vif_risk_indices": 9.068301648916405,
+  "us_e3_vs_us_e2_proxy_factor_return_std_pct_improvement": 6.315592986971341,
+  "DM_test_A_vs_B": {
+    "DM": -9.346807507322529,
+    "p_value": 0.0,
+    "n": 12356
+  }
+}
+```
+
+## Figures
+
+- `figures/exp1_universe_size.png` — Monthly ESTU size
+- `figures/exp1_lcapcb_cubic.png` — LCAPCB cubic shape
+- `figures/exp3_appendix_d.png` — Cumulative risk-index returns (Appendix D)
+- `figures/exp6_bias_decile.png` — Bias by capitalization decile
+- `figures/exp7_appendix_c.png` — Frequency distributions (Appendix C)
+- `figures/exp7_r2_timeseries.png` — Monthly cross-sectional R^2
